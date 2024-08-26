@@ -2,6 +2,7 @@
 #include <windows.h>
 #include <conio.h>
 #include <fstream>
+#include <ctime>
 using namespace std;
 //Estructuras
 struct Coordenadas {
@@ -22,6 +23,7 @@ struct Cuentas {
 	char tipo[2];
 	double apertura;
 	double actual;
+	int n_cuenta;
 };
 struct Movimientos {
 	Cuentas cuenta;
@@ -40,10 +42,11 @@ void gotoxy(int x,int y);
 void TamanoPantalla(int* ancho,int* alto);
 Coordenadas obtenerPosicionCursor();
 //FUNCIONES PARA EL FUNCIONAMIENTO
+void cargar_archivos(Cuentas *cuentas, Cliente *clientes, Movimientos *movimientos);
 void menu(int* opcion);
 void registro_clientes();
 void repetido(Cliente *cliente);
-
+void crear_cuentas();
 int main() {
 	int op;
 	menu(&op);
@@ -54,7 +57,7 @@ int main() {
 			break;
 		}
 		case 2: {
-
+		
 			break;
 		}
 		case 3: {
@@ -62,7 +65,7 @@ int main() {
 			break;
 		}
 		case 4: {
-
+			crear_cuentas();
 			break;
 		}
 		case 5: {
@@ -334,6 +337,31 @@ void menu(int* opcion) {
 
 
 //funciones del sistema
+void cargar_archivos(Cuentas *cuentas, Cliente *clientes, Movimientos *movimientos){
+	int tam;
+	ifstream fileclientes("bases de datos de los clientes.dat", ios::ate|ios::binary|ios::app|ios::in);
+	ifstream filecuentas("bases de datos de las cuentas.dat", ios::ate|ios::binary|ios::app|ios::in);
+	ifstream filemovimientos("bases de datos de los movimientos.dat",ios::ate|ios::binary|ios::app|ios::in);
+	fileclientes.seekg(0, fileclientes.end);
+	tam = fileclientes.tellg()/sizeof(Cliente);
+	fileclientes.seekg(0, fileclientes.beg);
+	for(int i = 0; i < tam; i++){
+		fileclientes.read((char*)clientes+i, sizeof(Cliente));
+	}
+	filecuentas.seekg(0, filecuentas.end);
+	tam = filecuentas.tellg()/sizeof(Cuentas);
+	filecuentas.seekg(0, filecuentas.beg);
+	for(int i = 0; i < tam; i++){
+		filecuentas.read((char*)cuentas+i, sizeof(Cuentas));
+	}
+	filemovimientos.seekg(0, filemovimientos.end);
+	tam = filemovimientos.tellg()/sizeof(Movimientos);
+	filemovimientos.seekg(0, filemovimientos.beg);
+	for(int i = 0; i < tam; i++){
+		filemovimientos.read((char*)movimientos+i, sizeof(Movimientos));
+	}
+	
+}
 void registro_clientes() {
 	mostrarCursor();
 	Cliente cliente;
@@ -405,6 +433,46 @@ void repetido(Cliente *cliente) {
 		}
 	}
 
+}
+void crear_cuentas(){
+	srand(time(0));
+	int identificacion;
+	bool existente = false;
+	Cuentas cuenta;
+	Cliente clientes;
+	ifstream inputfile("bases de datos de los clientes.dat", ios::binary|ios::in);
+	if(inputfile.eof()) {
+		existente = true;
+	}
+	if(!inputfile) {
+		cout << "No hay conexion con el archivo de clientes";
+		exit(1);
+	}
+	cout << "Digite su numero de identificacion: ";
+	cin >> cuenta.cliente.identificacion;
+	inputfile.seekg(0, inputfile.beg);
+	while(existente == false) {
+		while(!inputfile.eof()) {
+			existente=true;
+			inputfile.read((char*)&clientes, sizeof(Cliente));
+			if(clientes.identificacion != cuenta.cliente.identificacion) {
+				existente = false;
+			}
+		}
+		if(existente==false) {
+			cout << "Este numero no existe, vuelva a intentar";
+			cin >> cuenta.cliente.identificacion;
+		}
+	}
+	cuenta.n_cuenta = rand()%88889+11111;
+	cout << cuenta.n_cuenta << endl;
+	
+	ofstream outputfile("bases de datos de las cuentas.dat", ios::binary|ios::out|ios::app|ios::ate);
+	if(!outputfile){
+		cout << "Sin conexion con el archivo de cuentas";
+		exit(1);
+	}
+	
 }
 
 
