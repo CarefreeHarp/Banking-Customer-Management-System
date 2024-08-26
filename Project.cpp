@@ -1,11 +1,33 @@
 #include <iostream>
 #include <windows.h>
 #include <conio.h>
+#include <fstream>
 using namespace std;
 //Estructuras
 struct Coordenadas {
 	int x;
 	int y;
+};
+struct Cliente {
+	char tipo[3];
+	int identificacion;
+	char nombres[20];
+	char apellidos[20];
+	char ciudad[20];
+	char oficina[20];
+};
+
+struct Cuentas {
+	Cliente cliente;
+	char tipo[2];
+	double apertura;
+	double actual;
+};
+struct Movimientos {
+	Cuentas cuenta;
+	int consecutivo;
+	char tipo_movimiento[2];
+
 };
 
 //Variables Globales
@@ -19,10 +41,41 @@ void TamanoPantalla(int* ancho,int* alto);
 Coordenadas obtenerPosicionCursor();
 //FUNCIONES PARA EL FUNCIONAMIENTO
 void menu(int* opcion);
+void registro_clientes();
+void repetido(Cliente *cliente);
 
 int main() {
 	int op;
 	menu(&op);
+	switch(op) {
+		case 1: {
+
+			registro_clientes();
+			break;
+		}
+		case 2: {
+
+			break;
+		}
+		case 3: {
+
+			break;
+		}
+		case 4: {
+
+			break;
+		}
+		case 5: {
+
+			break;
+		}
+		case 6: {
+			break;
+		}
+		default: {
+			break;
+		}
+	}
 	cout<<"Opcion elegida: "<<op;
 	return 0;
 }
@@ -39,14 +92,14 @@ void menu(int* opcion) {
 	gotoxy((anchopantalla/2)-strlen(texto)/2,1);
 	for(int i=0; i<strlen(texto); i++) {
 		cout<<*(texto+i);
-		Sleep(25);
+		Sleep(15);
 	}
 	strcpy(texto,"Trabajado por Guillermo Aponte y Daniel Ramirez");
 	TamanoPantalla(&anchopantalla,&altopantalla);
 	gotoxy((anchopantalla/2)-strlen(texto)/2,2);
 	for(int i=0; i<strlen(texto); i++) {
 		cout<<*(texto+i);
-		Sleep(25);
+		Sleep(15);
 	}
 	gotoxy(0,altopantalla/4);
 	cout<<"o <-- REGISTRAR CLIENTES";
@@ -161,28 +214,27 @@ void menu(int* opcion) {
 			}
 		}
 	}
-	if(cursor.x==0){
-		if(cursor.y==altopantalla/4){
+	if(cursor.x==0) {
+		if(cursor.y==altopantalla/4) {
 			*opcion=1;
 		}
-		if(cursor.y==(altopantalla/4)*2){
+		if(cursor.y==(altopantalla/4)*2) {
 			*opcion=2;
 		}
-		if(cursor.y==(altopantalla/4)*3){
+		if(cursor.y==(altopantalla/4)*3) {
 			*opcion=3;
 		}
-	}
-	else{
-		if(cursor.y==altopantalla/4){
+	} else {
+		if(cursor.y==altopantalla/4) {
 			*opcion=4;
 		}
-		if(cursor.y==(altopantalla/4)*2){
+		if(cursor.y==(altopantalla/4)*2) {
 			*opcion=5;
 		}
-		if(cursor.y==(altopantalla/4)*3){
+		if(cursor.y==(altopantalla/4)*3) {
 			*opcion=6;
 		}
-		if(cursor.y==altopantalla-2){
+		if(cursor.y==altopantalla-2) {
 			system("cls");
 			strcpy(texto,"HA DECIDIDO SALIR.");
 			gotoxy((anchopantalla/2)-strlen(texto)/2,1);
@@ -257,7 +309,7 @@ void menu(int* opcion) {
 		}
 	}
 	system("cls");
-	for(int j=0;j<3;j++){
+	for(int j=0; j<3; j++) {
 		strcpy(texto,". . .");
 		gotoxy((anchopantalla/2)-strlen(texto)/2,altopantalla/2);
 		for(int i=0; i<strlen(texto); i++) {
@@ -271,6 +323,121 @@ void menu(int* opcion) {
 	gotoxy(0,0);
 }
 
+
+
+
+
+
+
+
+
+
+
+//funciones del sistema
+void registro_clientes() {
+	mostrarCursor();
+	Cliente cliente;
+	bool guardable;
+	int opcion;
+	ofstream file("bases de datos de los clientes.dat",ios::ate|ios::binary|ios::out|ios::app);
+	if(!file) {
+		cout << "Error al abrir el archivo";
+		exit(1);
+	}
+	cout << "Tipo de identificacion: " << endl;
+	cout << "1.CC" << endl << "2.TI" << endl << "3.CE" << endl;
+	cin >> opcion;
+	switch(opcion) {
+		case 1:
+			strcpy(cliente.tipo, "CC");
+			break;
+		case 2:
+			strcpy(cliente.tipo, "TI");
+			break;
+		case 3:
+			strcpy(cliente.tipo, "CE");
+			break;
+		default:
+			break;
+	}
+	cout << "Numero de documento: ";
+	cin >> cliente.identificacion;
+	repetido(&cliente);
+	fflush(stdin);
+	cout << "Nombres: ";
+	gets(cliente.nombres);
+	cout << endl;
+	cout << "Apellidos: ";
+	gets(cliente.apellidos);
+	cout << endl;
+	cout << "Oficina: ";
+	gets(cliente.oficina);
+	cout << endl << "Ciudad: ";
+	gets(cliente.ciudad);
+	file.seekp(0, file.end);
+	file.write((char*)&cliente, sizeof(Cliente));
+	file.close();
+}
+
+void repetido(Cliente *cliente) {
+	bool guardable = false;
+	Cliente cliente2;
+	ifstream inputfile("bases de datos de los clientes.dat", ios::binary|ios::in);
+	if(inputfile.eof()) {
+		guardable = true;
+	}
+	if(!inputfile) {
+		cout << "No hay coneccion con el archivo";
+		exit(1);
+	}
+	inputfile.seekg(0, inputfile.beg);
+	while(guardable == false) {
+		while(!inputfile.eof()) {
+			guardable=true;
+			inputfile.read((char*)&cliente2, sizeof(Cliente));
+			if(cliente2.identificacion == cliente->identificacion) {
+				guardable = false;
+			}
+		}
+		if(guardable==false) {
+			cout << "Este numero ya existe, vuelva a intentar";
+			cin >> cliente->identificacion;
+		}
+	}
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//funciones de decoración
 void ocultarCursor() {
 	HANDLE consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
 	CONSOLE_CURSOR_INFO cursorInfo;
