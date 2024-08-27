@@ -46,29 +46,22 @@ Coordenadas obtenerPosicionCursor();
 //FUNCIONES PARA EL FUNCIONAMIENTO
 Cliente* cargar_archivos_cliente(Cliente *clientes);
 Cuentas* cargar_archivos_cuentas(Cuentas *cuentas);
+Movimientos* cargar_archivos_movimientos(Movimientos *movimientos);
 void menu(int* opcion);
 void registro_clientes();
 void repetido(Cliente *cliente);
 void crear_cuentas();
 void consultar(Cliente* clientes, Cuentas *cuentas);
 int main() {
-	int tam;
-	int tam2;
-	ifstream fileclientes("bases de datos de los clientes.dat", ios::binary|ios::in);
-	ifstream filecuentas("bases de datos de las cuentas.dat", ios::binary|ios::in);
-	fileclientes.seekg(0, fileclientes.end);
-	tam = fileclientes.tellg()/sizeof(Cliente);
-	filecuentas.seekg(0, filecuentas.end);
-	tam2 = filecuentas.tellg()/sizeof(Cuentas);
-	Cuentas *cuentas=new Cuentas[100];
-	Cliente *clientes=new Cliente[100];
-	Movimientos *movimientos=new Movimientos[100];
+	Cuentas *cuentas=new Cuentas[1];
+	Cliente *clientes=new Cliente[1];
+	Movimientos *movimientos=new Movimientos[1];
 	int op;
 	menu(&op);
 	while(op != 7) {
 		clientes=cargar_archivos_cliente(clientes);
 		cuentas=cargar_archivos_cuentas(cuentas);
-		cout<<"          EL DEL MAIN:      "<<clientes[0].identificacion<<" su direccion es"<<&clientes[0].identificacion;
+		movimientos=cargar_archivos_movimientos(movimientos);
 		switch(op) {
 			case 1: {
 				registro_clientes();
@@ -310,11 +303,9 @@ Cliente* cargar_archivos_cliente(Cliente *clientes) {
 		fileclientes.clear();
 		fileclientes.close();
 		return clientes;
-	} else {
-		return clientes;
 	}
+	return clientes;
 }
-
 Cuentas* cargar_archivos_cuentas(Cuentas *cuentas) {
 	int tam;
 	ifstream filecuentas("bases de datos de las cuentas.dat",ios::binary|ios::in);
@@ -329,19 +320,13 @@ Cuentas* cargar_archivos_cuentas(Cuentas *cuentas) {
 		}
 		filecuentas.clear();
 		filecuentas.close();
-		return cuentas;
-	} else {
-		return cuentas;
 	}
+	return cuentas;
 }
-/*
+Movimientos* cargar_archivos_movimientos(Movimientos *movimientos) {
+	int tam;
 	ifstream filemovimientos("bases de datos de los movimientos.dat",ios::binary|ios::in);
-	if(filemovimientos&&retornomovimientos==true){
-		retornomovimientos=false;
-		retornoclientes=true;
-		cout<<"lectura del movimientos clientes realizada";
-		system("pause");
-		system("cls");
+	if(filemovimientos){
 		filemovimientos.seekg(0, filemovimientos.end);
 		tam = filemovimientos.tellg()/sizeof(Movimientos);
 		delete[] movimientos;
@@ -352,8 +337,9 @@ Cuentas* cargar_archivos_cuentas(Cuentas *cuentas) {
 		}
 		filemovimientos.clear();
 		filemovimientos.close();
-		return movimientos;
-	}*/
+	}
+	return movimientos;
+}
 void registro_clientes() {
 	Cliente cliente;
 	bool guardable;
@@ -366,7 +352,6 @@ void registro_clientes() {
 			if((i==0)||(i==anchopantalla-1)||(j==0)||(j==altopantalla-1)) {
 				gotoxy(i,j);
 				cout<<char(178);
-				Sleep(1);
 			}
 		}
 	}
@@ -482,6 +467,12 @@ void registro_clientes() {
 		cout<<*(texto+i);
 	}
 	gets(cliente.ciudad);
+	strcpy(texto,"Cliente Registrado correctamente!!");
+	gotoxy((anchopantalla/2)-strlen(texto)/2,cursor.y+6);
+	for(int i=0; i<strlen(texto); i++) {
+		cout<<*(texto+i);
+	}
+	Sleep(3000);
 	file.write((char*)&cliente, sizeof(Cliente));
 	file.close();
 }
@@ -496,7 +487,7 @@ void repetido(Cliente *cliente) {
 		guardable = true;
 	}
 	if(!inputfile) {
-		cout << "No hay coneccion con el archivo";
+		cout << "No hay conexion con el archivo";
 		exit(1);
 	}
 	inputfile.seekg(0, inputfile.beg);
@@ -537,19 +528,35 @@ void crear_cuentas() {
 	bool existente = false;
 	int tipocuenta;
 	bool suficiente = false;
+	bool cambio;
 	int correccion;
+	int iteracion=0;
+	int tecla=0;
 	Cuentas cuenta;
 	Cliente clientes;
 	Cuentas auxiliar;
+	char texto[100];
 	ifstream inputfile("bases de datos de los clientes.dat", ios::binary|ios::in);
 	if(inputfile.eof()) {
 		existente = true;
 	}
 	if(!inputfile) {
-		cout << "No hay conexion con el archivo de clientes";
+		cout << "No hay conexion con el archivo de clientes, revise si ya hay almenos uno en el archivo";
 		exit(1);
 	}
-	cout << "Digite su numero de identificacion: ";
+	for(int i=0; i<anchopantalla; i++) {
+		for(int j=0; j<altopantalla; j++) {
+			if((i==0)||(i==anchopantalla-1)||(j==0)||(j==altopantalla-1)) {
+				gotoxy(i,j);
+				cout<<char(178);
+			}
+		}
+	}
+	strcpy(texto,"Digite su numero de identificacion: ");
+	gotoxy((anchopantalla/2)-strlen(texto)/2-5,3);
+	for(int i=0; i<strlen(texto); i++) {
+		cout<<*(texto+i);
+	}
 	cin >> cuenta.cliente.identificacion;
 	inputfile.seekg(0, inputfile.beg);
 	while(existente == false) {
@@ -560,26 +567,132 @@ void crear_cuentas() {
 			}
 		}
 		if(existente==false) {
-			cout << "Este cliente no esta registrado, que desea hacer?" << endl;
-			cout << "1.Volver a digitar el numero" << endl << "2. Registrarse " << endl << "3. salir" << endl;
-			cin >> correccion;
+			strcpy(texto,"Este cliente no esta registrado, que desea hacer?");
+			gotoxy((anchopantalla/2)-strlen(texto)/2,5);
+			for(int i=0; i<strlen(texto); i++) {
+				cout<<*(texto+i);
+			}
+			strcpy(texto,"Volver a digitar el numero");
+			gotoxy((anchopantalla/4)-strlen(texto)/2,9);
+			for(int i=0; i<strlen(texto); i++) {
+				cout<<*(texto+i);
+			}
+			strcpy(texto,"Registrarse y volver");
+			gotoxy((anchopantalla/4)*2-strlen(texto)/2,9);
+			for(int i=0; i<strlen(texto); i++) {
+				cout<<*(texto+i);
+			}
+			strcpy(texto,"Salir");
+			gotoxy((anchopantalla/4)*3-strlen(texto)/2,9);
+			for(int i=0; i<strlen(texto); i++) {
+				cout<<*(texto+i);
+			}
+			strcpy(texto,"o");
+			for(int k=1;k<4;k++){
+				gotoxy((anchopantalla/4)*k-strlen(texto)/2,10);
+				for(int i=0; i<strlen(texto); i++) {
+					cout<<*(texto+i);
+				}
+			}
+			gotoxy((anchopantalla/4)-strlen(texto)/2,10);
+			while(tecla!=13) {
+				cursor=obtenerPosicionCursor();
+				iteracion++;
+				if(iteracion%2500==0) {
+					if(cambio) {
+						cout<<char(254);
+						gotoxy(cursor.x,cursor.y);
+						cambio=false;
+					} else {
+						cout<<"o";
+						gotoxy(cursor.x,cursor.y);
+						cambio=true;
+					}
+				}
+				if(kbhit()) {
+					tecla=getch();
+					switch(tecla) {
+						case 75: { //Movimiento a la izquierda
+							if(cursor.x==(anchopantalla/4)-strlen(texto)/2) {
+								cout<<"o";
+								gotoxy((anchopantalla/4)*3-strlen(texto)/2,10);
+							}
+							if(cursor.x==(anchopantalla/4)*2-strlen(texto)/2) {
+								cout<<"o";
+								gotoxy((anchopantalla/4)-strlen(texto)/2,10);
+							}
+							if(cursor.x==(anchopantalla/4)*3-strlen(texto)/2) {
+								cout<<"o";
+								gotoxy((anchopantalla/4)*2-strlen(texto)/2,10);
+							}
+							break;
+						}
+						case 77: { //Movimiento a la derecha
+							if(cursor.x==(anchopantalla/4)*3-strlen(texto)/2) {
+								cout<<"o";
+								gotoxy((anchopantalla/4)-strlen(texto)/2,10);
+							}
+							if(cursor.x==(anchopantalla/4)*2-strlen(texto)/2) {
+								cout<<"o";
+								gotoxy((anchopantalla/4)*3-strlen(texto)/2,10);
+							}
+							if(cursor.x==(anchopantalla/4)-strlen(texto)/2) {
+								cout<<"o";
+								gotoxy((anchopantalla/4)*2-strlen(texto)/2,10);
+							}
+							break;
+						}
+					}
+				}
+			}
+			if(cursor.x==(anchopantalla/4)-strlen(texto)/2)
+				correccion=1;
+			if(cursor.x==(anchopantalla/4)*2-strlen(texto)/2)
+				correccion=2;
+			if(cursor.x==(anchopantalla/4)*3-strlen(texto)/2)
+				correccion=3;
 			switch(correccion) {
 				case 1: {
-					cout << "Digite su numero de identificacion: ";
+					tecla=0;
+					strcpy(texto,"Escriba su numero: ");
+					gotoxy((anchopantalla/2)-strlen(texto)/2-5,12);
+					for(int i=0; i<strlen(texto); i++) {
+						cout<<*(texto+i);
+					}
 					inputfile.clear();
 					inputfile.seekg(0,inputfile.beg);
 					cin >> cuenta.cliente.identificacion;
-
+					for(int i=0; i<anchopantalla; i++) {
+						for(int j=0; j<altopantalla; j++) {
+							if((i==0)||(i==anchopantalla-1)||(j==0)||(j==altopantalla-1)) {
+								gotoxy(i,j);
+								cout<<char(178);
+							}
+						}
+					}
 					break;
 				}
 				case 2: {
 					system("cls");
 					registro_clientes();
 					system("cls");
-					cout << " Digite el numero de identificacion del cliente recien registrado para la apertura de su cuenta: ";
+					for(int i=0; i<anchopantalla; i++) {
+						for(int j=0; j<altopantalla; j++) {
+							if((i==0)||(i==anchopantalla-1)||(j==0)||(j==altopantalla-1)) {
+								gotoxy(i,j);
+								cout<<char(178);
+							}
+						}
+					}
+					strcpy(texto,"Digite el numero de identificacion del cliente recien registrado para la apertura de su cuenta: ");
+					gotoxy((anchopantalla/2)-strlen(texto)/2-5,12);
+					for(int i=0; i<strlen(texto); i++) {
+						cout<<*(texto+i);
+					}
 					inputfile.clear();
 					inputfile.seekg(0,inputfile.beg);
 					cin >> cuenta.cliente.identificacion;
+					tecla=0;
 					break;
 				}
 				case 3: {
@@ -588,7 +701,6 @@ void crear_cuentas() {
 				}
 			}
 		}
-
 	}
 	existente = false;
 	ifstream inputfile2("bases de datos de las cuentas.dat", ios::binary|ios::in);
@@ -605,10 +717,90 @@ void crear_cuentas() {
 		inputfile2.seekg(0,inputfile2.beg);
 	}
 	inputfile2.close();
-	cout << "Su numero asignado de cuenta es: " << cuenta.n_cuenta << endl;
-	cout << "Tipo de cuenta: " << endl << "1. Ahorros" << endl << "2. Corriente " << endl;
-	cin >> tipocuenta;
-	fflush(stdin);
+	system("cls");
+	for(int i=0; i<anchopantalla; i++) {
+		for(int j=0; j<altopantalla; j++) {
+			if((i==0)||(i==anchopantalla-1)||(j==0)||(j==altopantalla-1)) {
+				gotoxy(i,j);
+				cout<<char(178);
+			}
+		}
+	}
+	strcpy(texto,"El numero aleatorio asignado a su cuenta es: ");
+	gotoxy((anchopantalla/2)-strlen(texto)/2-5,3);
+	for(int i=0; i<strlen(texto); i++) {
+		cout<<*(texto+i);
+	}
+	cout<<cuenta.n_cuenta;
+	strcpy(texto,"Que tipo de cuenta desea abrir?");
+	gotoxy((anchopantalla/2)-strlen(texto)/2,5);
+	for(int i=0; i<strlen(texto); i++) {
+		cout<<*(texto+i);
+	}
+	strcpy(texto,"Ahorros");
+	gotoxy((anchopantalla/3)-strlen(texto)/2,7);
+	for(int i=0; i<strlen(texto); i++) {
+		cout<<*(texto+i);
+	}
+	strcpy(texto,"Corriente");
+	gotoxy((anchopantalla/3)*2-strlen(texto)/2,7);
+	for(int i=0; i<strlen(texto); i++) {
+		cout<<*(texto+i);
+	}
+	strcpy(texto,"o");
+	for(int k=1;k<3;k++){
+		gotoxy((anchopantalla/3)*k-strlen(texto)/2,8);
+		for(int i=0; i<strlen(texto); i++) {
+			cout<<*(texto+i);
+		}
+	}
+	gotoxy((anchopantalla/3)-strlen(texto)/2,8);
+	while(tecla!=13) {
+		cursor=obtenerPosicionCursor();
+		iteracion++;
+		if(iteracion%2500==0) {
+			if(cambio) {
+				cout<<char(254);
+				gotoxy(cursor.x,cursor.y);
+				cambio=false;
+			} else {
+				cout<<"o";
+				gotoxy(cursor.x,cursor.y);
+				cambio=true;
+			}
+		}
+		if(kbhit()) {
+			tecla=getch();
+			switch(tecla) {
+				case 75: { //Movimiento a la izquierda
+					if(cursor.x==(anchopantalla/3)-strlen(texto)/2) {
+						cout<<"o";
+						gotoxy((anchopantalla/3)*2-strlen(texto)/2,8);
+					}
+					if(cursor.x==(anchopantalla/3)*2-strlen(texto)/2) {
+						cout<<"o";
+						gotoxy((anchopantalla/3)-strlen(texto)/2,8);
+					}
+					break;
+				}
+				case 77: { //Movimiento a la derecha
+					if(cursor.x==(anchopantalla/3)*2-strlen(texto)/2) {
+						cout<<"o";
+						gotoxy((anchopantalla/3)-strlen(texto)/2,8);
+					}
+					if(cursor.x==(anchopantalla/3)-strlen(texto)/2) {
+						cout<<"o";
+						gotoxy((anchopantalla/3)*2-strlen(texto)/2,8);
+					}
+					break;
+				}
+			}
+		}
+	}
+	if(cursor.x==(anchopantalla/3)-strlen(texto)/2)
+		tipocuenta=1;
+	if(cursor.x==(anchopantalla/3)*2-strlen(texto)/2/2)
+		tipocuenta=2;
 	switch(tipocuenta) {
 		case 1: {
 			cuenta.tipo = 'A';
@@ -618,22 +810,41 @@ void crear_cuentas() {
 			cuenta.tipo = 'C';
 			break;
 		}
-		default: {
-			cout << "Numero erroneo";
-			break;
-		}
 	}
 	while(suficiente == false) {
-
-		cout << "Saldo de apertura (minimo 50.000): ";
+		cursor=obtenerPosicionCursor();
+		if(cursor.y>=22){
+			for(int j=10;j<28;j++){
+				strcpy(texto,"                                                 ");
+				gotoxy((anchopantalla/2)-strlen(texto)/2-6,j);
+				for(int i=0; i<strlen(texto); i++) {
+					cout<<*(texto+i);
+				}
+			}
+			cursor.y=8;
+		}
+		strcpy(texto,"Saldo de apertura (minimo 50.000): ");
+		gotoxy((anchopantalla/2)-strlen(texto)/2-4,cursor.y+2);
+		for(int i=0; i<strlen(texto); i++) {
+			cout<<*(texto+i);
+		}
 		cin >> cuenta.apertura;
 		if(cuenta.apertura >= 50000) {
-			cout << "Cuenta creada correctamente";
+			strcpy(texto,"Cuenta creada correctamente!!");
+			gotoxy((anchopantalla/2)-strlen(texto)/2,cursor.y+6);
+			for(int i=0; i<strlen(texto); i++) {
+				cout<<*(texto+i);
+			}
 			suficiente = true;
 			cuenta.actual = cuenta.apertura;
 			inputfile.seekg(0, inputfile.end);
+			Sleep(3000);
 		} else {
-			cout << "Saldo insuficiente, vuelva a intentarlo" << endl;
+			strcpy(texto,"Saldo insuficiente, vuelva a intentarlo");
+			gotoxy((anchopantalla/2)-strlen(texto)/2-4,cursor.y+4);
+			for(int i=0; i<strlen(texto); i++) {
+				cout<<*(texto+i);
+			}
 		}
 	}
 
@@ -657,8 +868,8 @@ void consultar(Cliente *clientes, Cuentas *cuentas) {
 	ifstream filecuentas("bases de datos de las cuentas.dat",ios::binary|ios::app|ios::in);
 	fileclientes.seekg(0,fileclientes.end);
 	filecuentas.seekg(0,fileclientes.end);
-	tam=filecuentas.tellg()/sizeof(Cuentas);
-	tam2=fileclientes.tellg()/sizeof(Cliente);
+	tam=(filecuentas.tellg()/sizeof(Cuentas));
+	tam2=(fileclientes.tellg()/sizeof(Cliente));
 	fileclientes.close();
 	filecuentas.close();
 
@@ -666,24 +877,23 @@ void consultar(Cliente *clientes, Cuentas *cuentas) {
 	cout << "Por que metodo desea consultar: " << endl << "1.Numero de identificacion " << endl << "2.Numero de cuenta" << endl;
 	cin >> opcion;
 	switch(opcion) {
-		case 1: {
+		case 1:{
 			cout << "Digite su numero de identificacion: ";
 			cin >> identificacion;
 			for(int i = 0; i < tam; i++) {
-				cout<<" id comprobacion es "<<(cuentas+i)->cliente.identificacion<<endl;
 				if(identificacion == (cuentas+i)->cliente.identificacion) {
 					cout << "Datos de cuenta: " << endl;
 					for(int j = 0; j < tam2; j++) {
-						if(identificacion == (clientes+i)->identificacion) {
+						if(identificacion == (clientes+j)->identificacion) {
 							cout << "Cliente: " << (clientes+j)->nombres << " " << (clientes+j)->apellidos << endl;
 							cout << "Cuenta #" << (cuentas+i)->n_cuenta << endl;
 							cout << "Cuenta de tipo: ";
-							if((cuentas+i)->tipo == 'A') {
+							if((cuentas)->tipo == 'A') {
 								cout << "ahorros" << endl;
 							} else {
 								cout << "corriente" << endl;
 							}
-							cout << "Saldo: " << (cuentas+i)->actual;
+							cout << "Saldo: " << (cuentas+i)->actual << endl;
 						}
 					}
 				}
@@ -691,16 +901,15 @@ void consultar(Cliente *clientes, Cuentas *cuentas) {
 			break;
 		}
 		case 2: {
-			cout << "Digite su numero de cuenta";
+			cout << "Digite su numero de cuenta ";
 			cin >> cuenta;
 			for(int i = 0; i < tam; i++) {
 				if(cuenta == (cuentas+i)->n_cuenta) {
 					cout << "Datos de cuenta: " << endl;
-					for(int j = 0; j < tam; j++) {
-						if(cuenta == (cuentas+j)->cliente.identificacion) {
 							for(int k = 0; k < tam2; k++) {
 								if((cuentas+i)->cliente.identificacion == (clientes+k)->identificacion) {
 									cout << "Cliente: " << (clientes+k)->nombres << " " << (clientes+k)->apellidos << endl;
+									cout << "identificacion: " << (clientes+k)->identificacion << endl;
 									cout << "Cuenta #" << (cuentas+i)->n_cuenta << endl;
 									cout << "Cuenta de tipo: ";
 									if((cuentas+i)->tipo == 'A') {
@@ -708,10 +917,8 @@ void consultar(Cliente *clientes, Cuentas *cuentas) {
 									} else {
 										cout << "corriente" << endl;
 									}
-									cout << "Saldo: " << (cuentas+i)->actual;
-								}
+									cout << "Saldo: " << (cuentas+i)->actual << endl;
 							}
-						}
 					}
 				}
 			}
