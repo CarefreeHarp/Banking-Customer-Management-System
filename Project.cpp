@@ -44,20 +44,31 @@ void TamanoPantalla(int* ancho,int* alto);
 void despedida();
 Coordenadas obtenerPosicionCursor();
 //FUNCIONES PARA EL FUNCIONAMIENTO
-void cargar_archivos(Cuentas *cuentas, Cliente *clientes, Movimientos *movimientos);
+Cliente* cargar_archivos_cliente(Cliente *clientes);
+Cuentas* cargar_archivos_cuentas(Cuentas *cuentas);
 void menu(int* opcion);
 void registro_clientes();
 void repetido(Cliente *cliente);
 void crear_cuentas();
 void consultar(Cliente* clientes, Cuentas *cuentas);
 int main() {
+	int tam;
+	int tam2;
+	ifstream fileclientes("bases de datos de los clientes.dat", ios::binary|ios::in);
+	ifstream filecuentas("bases de datos de las cuentas.dat", ios::binary|ios::in);
+	fileclientes.seekg(0, fileclientes.end);
+	tam = fileclientes.tellg()/sizeof(Cliente);
+	filecuentas.seekg(0, filecuentas.end);
+	tam2 = filecuentas.tellg()/sizeof(Cuentas);
 	Cuentas *cuentas=new Cuentas[100];
 	Cliente *clientes=new Cliente[100];
 	Movimientos *movimientos=new Movimientos[100];
 	int op;
 	menu(&op);
 	while(op != 7) {
-		cargar_archivos(cuentas, clientes, movimientos);
+		clientes=cargar_archivos_cliente(clientes);
+		cuentas=cargar_archivos_cuentas(cuentas);
+		cout<<"          EL DEL MAIN:      "<<clientes[0].identificacion<<" su direccion es"<<&clientes[0].identificacion;
 		switch(op) {
 			case 1: {
 				registro_clientes();
@@ -284,42 +295,65 @@ void menu(int* opcion) {
 
 
 //funciones del sistema
-void cargar_archivos(Cuentas *cuentas, Cliente *clientes, Movimientos *movimientos) {
+Cliente* cargar_archivos_cliente(Cliente *clientes) {
 	int tam;
-	ifstream fileclientes("bases de datos de los clientes.dat",ios::binary|ios::app|ios::in);
-	ifstream filecuentas("bases de datos de las cuentas.dat",ios::binary|ios::app|ios::in);
-	ifstream filemovimientos("bases de datos de los movimientos.dat",ios::binary|ios::app|ios::in);
-	fileclientes.seekg(0, fileclientes.end);
-	tam = fileclientes.tellg()/sizeof(Cliente);
-	delete[] clientes;
-	clientes = new Cliente[tam];
-	fileclientes.seekg(0, fileclientes.beg);
-	for(int i = 0; i < tam; i++) {
-		fileclientes.read((char*)&clientes[i], sizeof(Cliente));
+	ifstream fileclientes("bases de datos de los clientes.dat",ios::binary|ios::in);
+	if(fileclientes) {
+		fileclientes.seekg(0, fileclientes.end);
+		tam = fileclientes.tellg()/sizeof(Cliente);
+		delete[] clientes;
+		clientes = new Cliente[tam];
+		fileclientes.seekg(0, fileclientes.beg);
+		for(int i = 0; i < tam; i++) {
+			fileclientes.read((char*)&clientes[i],sizeof(Cliente));
+		}
+		fileclientes.clear();
+		fileclientes.close();
+		return clientes;
+	} else {
+		return clientes;
 	}
-	fileclientes.clear();
-	filecuentas.seekg(0, filecuentas.end);
-	tam = filecuentas.tellg()/sizeof(Cuentas);
-	delete []cuentas;
-	cuentas = new Cuentas[tam];
-	filecuentas.seekg(0, filecuentas.beg);
-	for(int i = 0; i < tam; i++) {
-		filecuentas.read((char*)cuentas+i, sizeof(Cuentas));
-	}
-	filecuentas.clear();
-	filemovimientos.seekg(0, filemovimientos.end);
-	tam = filemovimientos.tellg()/sizeof(Movimientos);
-	delete[] movimientos;
-	movimientos = new Movimientos[tam];
-	filemovimientos.seekg(0, filemovimientos.beg);
-	for(int i = 0; i < tam; i++) {
-		filemovimientos.read((char*)movimientos+i, sizeof(Movimientos));
-	}
-	filemovimientos.clear();
-	filecuentas.close();
-	fileclientes.close();
-	filemovimientos.close();
 }
+
+Cuentas* cargar_archivos_cuentas(Cuentas *cuentas) {
+	int tam;
+	ifstream filecuentas("bases de datos de las cuentas.dat",ios::binary|ios::in);
+	if(filecuentas) {
+		filecuentas.seekg(0, filecuentas.end);
+		tam = filecuentas.tellg()/sizeof(Cuentas);
+		delete []cuentas;
+		cuentas = new Cuentas[tam];
+		filecuentas.seekg(0, filecuentas.beg);
+		for(int i = 0; i < tam; i++) {
+			filecuentas.read((char*)&cuentas[i], sizeof(Cuentas));
+		}
+		filecuentas.clear();
+		filecuentas.close();
+		return cuentas;
+	} else {
+		return cuentas;
+	}
+}
+/*
+	ifstream filemovimientos("bases de datos de los movimientos.dat",ios::binary|ios::in);
+	if(filemovimientos&&retornomovimientos==true){
+		retornomovimientos=false;
+		retornoclientes=true;
+		cout<<"lectura del movimientos clientes realizada";
+		system("pause");
+		system("cls");
+		filemovimientos.seekg(0, filemovimientos.end);
+		tam = filemovimientos.tellg()/sizeof(Movimientos);
+		delete[] movimientos;
+		movimientos = new Movimientos[tam];
+		filemovimientos.seekg(0, filemovimientos.beg);
+		for(int i = 0; i < tam; i++) {
+			filemovimientos.read((char*)&movimientos[i], sizeof(Movimientos));
+		}
+		filemovimientos.clear();
+		filemovimientos.close();
+		return movimientos;
+	}*/
 void registro_clientes() {
 	Cliente cliente;
 	bool guardable;
@@ -414,6 +448,11 @@ void registro_clientes() {
 		cout<<*(texto+i);
 	}
 	cin>>cliente.identificacion;
+	ofstream file("bases de datos de los clientes.dat",ios::ate|ios::binary|ios::out|ios::app);
+	if(!file) {
+		cout << "Error al abrir el archivo";
+		exit(1);
+	}
 	repetido(&cliente);
 	fflush(stdin);
 	cursor=obtenerPosicionCursor();
@@ -443,11 +482,6 @@ void registro_clientes() {
 		cout<<*(texto+i);
 	}
 	gets(cliente.ciudad);
-	ofstream file("bases de datos de los clientes.dat",ios::ate|ios::binary|ios::out|ios::app);
-	if(!file) {
-		cout << "Error al abrir el archivo";
-		exit(1);
-	}
 	file.write((char*)&cliente, sizeof(Cliente));
 	file.close();
 }
@@ -627,12 +661,12 @@ void consultar(Cliente *clientes, Cuentas *cuentas) {
 	tam2=fileclientes.tellg()/sizeof(Cliente);
 	fileclientes.close();
 	filecuentas.close();
-	
+
 
 	cout << "Por que metodo desea consultar: " << endl << "1.Numero de identificacion " << endl << "2.Numero de cuenta" << endl;
 	cin >> opcion;
 	switch(opcion) {
-		case 1:{
+		case 1: {
 			cout << "Digite su numero de identificacion: ";
 			cin >> identificacion;
 			for(int i = 0; i < tam; i++) {
@@ -709,7 +743,7 @@ void consultar(Cliente *clientes, Cuentas *cuentas) {
 
 
 
-//funciones de decoraciÃƒÆ’Ã‚Â³n
+//funciones de decoraciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n
 void ocultarCursor() {
 	HANDLE consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
 	CONSOLE_CURSOR_INFO cursorInfo;
