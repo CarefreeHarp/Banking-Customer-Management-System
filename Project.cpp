@@ -83,7 +83,9 @@ int main() {
 			break;
 		}
 	}
-	cout<<"Opcion elegida: "<<op;
+	while(1!=2){
+		
+	}
 	return 0;
 }
 
@@ -315,6 +317,12 @@ void menu(int* opcion) {
 		}
 	}
 	system("cls");
+	strcpy(texto," Cargando");
+		gotoxy((anchopantalla/2)-strlen(texto)/2,altopantalla/2-1);
+		for(int i=0; i<strlen(texto); i++) {
+			Sleep(100);
+			cout<<*(texto+i);
+		}
 	for(int j=0; j<3; j++) {
 		strcpy(texto,". . .");
 		gotoxy((anchopantalla/2)-strlen(texto)/2,altopantalla/2);
@@ -326,6 +334,8 @@ void menu(int* opcion) {
 		gotoxy((anchopantalla/2)-strlen(texto)/2,altopantalla/2);
 		cout<<"     ";
 	}
+	gotoxy((anchopantalla/2)-strlen(texto)/2-1,altopantalla/2-1);
+	cout<<"        ";
 	gotoxy(0,0);
 }
 
@@ -366,6 +376,15 @@ void registro_clientes() {
 	if(!file) {
 		cout << "Error al abrir el archivo";
 		exit(1);
+	}
+	for(int i=0;i<anchopantalla;i++){
+		for(int j=0;j<altopantalla;j++){
+			if((i==0)||(i==anchopantalla-1)||(j==0)||(j==altopantalla-1)){
+				gotoxy(i,j);
+				cout<<char(178);
+				Sleep(1);
+			}
+		}
 	}
 	strcpy(texto,"Seleccione su tipo de identificacion");
 	gotoxy((anchopantalla/2)-strlen(texto)/2,3);
@@ -446,17 +465,33 @@ void registro_clientes() {
 	}
 	cin>>cliente.identificacion;
 	repetido(&cliente);
-	cout<<"identificacion al fin y al cabo fue "<<cliente.identificacion;
 	fflush(stdin);
-	cout << "Nombres: ";
+	cursor=obtenerPosicionCursor();
+	strcpy(texto,"Nombres: ");
+	gotoxy((anchopantalla/2)-(strlen(texto)/2)-5,cursor.y+1);
+	for(int i=0; i<strlen(texto); i++) {
+		cout<<*(texto+i);
+	}
 	gets(cliente.nombres);
 	cout << endl;
-	cout << "Apellidos: ";
+	strcpy(texto,"Apellidos: ");
+	gotoxy((anchopantalla/2)-(strlen(texto)/2)-5,cursor.y+2);
+	for(int i=0; i<strlen(texto); i++) {
+		cout<<*(texto+i);
+	}
 	gets(cliente.apellidos);
 	cout << endl;
-	cout << "Oficina: ";
+	strcpy(texto,"Oficina: ");
+	gotoxy((anchopantalla/2)-(strlen(texto)/2)-5,cursor.y+3);
+	for(int i=0; i<strlen(texto); i++) {
+		cout<<*(texto+i);
+	}
 	gets(cliente.oficina);
-	cout << endl << "Ciudad: ";
+	strcpy(texto,"Ciudad: ");
+	gotoxy((anchopantalla/2)-(strlen(texto)/2)-5,cursor.y+4);
+	for(int i=0; i<strlen(texto); i++) {
+		cout<<*(texto+i);
+	}
 	gets(cliente.ciudad);
 	file.seekp(0, file.end);
 	file.write((char*)&cliente, sizeof(Cliente));
