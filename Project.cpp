@@ -621,8 +621,12 @@ void consultar(Cliente *clientes, Cuentas *cuentas) {
 	bool encontrado = false;
 	int tam;
 	int tam2;
-	tam2 = sizeof(clientes)/sizeof(Cliente);
-	tam = sizeof(cuentas)/sizeof(Cuentas);
+	ifstream fileclientes("bases de datos de los clientes.dat", ios::ate|ios::binary|ios::app|ios::in);
+	ifstream filecuentas("bases de datos de las cuentas.dat", ios::ate|ios::binary|ios::app|ios::in);
+	fileclientes.seekg(0,fileclientes.end);
+	filecuentas.seekg(0,fileclientes.end);
+	tam=filecuentas.tellg()/sizeof(Cuentas);
+	tam2=fileclientes.tellg()/sizeof(Cliente);
 
 	cout << "Por que metodo desea consultar: " << endl << "1.Numero de identificacion " << endl << "2.Numero de cuenta" << endl;
 	cin >> opcion;
