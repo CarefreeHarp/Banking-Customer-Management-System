@@ -286,9 +286,9 @@ void menu(int* opcion) {
 //funciones del sistema
 void cargar_archivos(Cuentas *cuentas, Cliente *clientes, Movimientos *movimientos) {
 	int tam;
-	ifstream fileclientes("bases de datos de los clientes.dat", ios::ate|ios::binary|ios::app|ios::in);
-	ifstream filecuentas("bases de datos de las cuentas.dat", ios::ate|ios::binary|ios::app|ios::in);
-	ifstream filemovimientos("bases de datos de los movimientos.dat",ios::ate|ios::binary|ios::app|ios::in);
+	ifstream fileclientes("bases de datos de los clientes.dat",ios::binary|ios::app|ios::in);
+	ifstream filecuentas("bases de datos de las cuentas.dat",ios::binary|ios::app|ios::in);
+	ifstream filemovimientos("bases de datos de los movimientos.dat",ios::binary|ios::app|ios::in);
 	fileclientes.seekg(0, fileclientes.end);
 	tam = fileclientes.tellg()/sizeof(Cliente);
 	delete[] clientes;
@@ -327,11 +327,6 @@ void registro_clientes() {
 	int tecla=0;
 	int iteracion=0;
 	char texto[100];
-	ofstream file("bases de datos de los clientes.dat",ios::ate|ios::binary|ios::out|ios::app);
-	if(!file) {
-		cout << "Error al abrir el archivo";
-		exit(1);
-	}
 	for(int i=0; i<anchopantalla; i++) {
 		for(int j=0; j<altopantalla; j++) {
 			if((i==0)||(i==anchopantalla-1)||(j==0)||(j==altopantalla-1)) {
@@ -448,7 +443,11 @@ void registro_clientes() {
 		cout<<*(texto+i);
 	}
 	gets(cliente.ciudad);
-	file.seekp(0, file.end);
+	ofstream file("bases de datos de los clientes.dat",ios::ate|ios::binary|ios::out|ios::app);
+	if(!file) {
+		cout << "Error al abrir el archivo";
+		exit(1);
+	}
 	file.write((char*)&cliente, sizeof(Cliente));
 	file.close();
 }
@@ -609,7 +608,6 @@ void crear_cuentas() {
 		cout << "Sin conexion con el archivo de cuentas";
 		exit(1);
 	}
-	outputfile.seekp(0, outputfile.end);
 	outputfile.write((char*)&cuenta, sizeof(Cuentas));
 	outputfile.close();
 }
@@ -621,12 +619,15 @@ void consultar(Cliente *clientes, Cuentas *cuentas) {
 	bool encontrado = false;
 	int tam;
 	int tam2;
-	ifstream fileclientes("bases de datos de los clientes.dat", ios::ate|ios::binary|ios::app|ios::in);
-	ifstream filecuentas("bases de datos de las cuentas.dat", ios::ate|ios::binary|ios::app|ios::in);
+	ifstream fileclientes("bases de datos de los clientes.dat",ios::binary|ios::app|ios::in);
+	ifstream filecuentas("bases de datos de las cuentas.dat",ios::binary|ios::app|ios::in);
 	fileclientes.seekg(0,fileclientes.end);
 	filecuentas.seekg(0,fileclientes.end);
 	tam=filecuentas.tellg()/sizeof(Cuentas);
 	tam2=fileclientes.tellg()/sizeof(Cliente);
+	fileclientes.close();
+	filecuentas.close();
+	
 
 	cout << "Por que metodo desea consultar: " << endl << "1.Numero de identificacion " << endl << "2.Numero de cuenta" << endl;
 	cin >> opcion;
@@ -848,4 +849,3 @@ void despedida() {
 	}
 	exit(1);
 }
-
