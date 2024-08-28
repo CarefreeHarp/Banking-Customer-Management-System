@@ -28,7 +28,7 @@ struct Cuentas {
 struct Movimientos {
 	Cuentas cuenta;
 	int consecutivo;
-	char tipo_movimiento[2];
+	char tipo_movimiento;
 
 };
 
@@ -52,6 +52,7 @@ void registro_clientes();
 void repetido(Cliente *cliente);
 void crear_cuentas();
 void consultar(Cliente* clientes, Cuentas *cuentas);
+void transacciones(Cliente *clientes, Cuentas *cuenta);
 int main() {
 	Cuentas *cuentas=new Cuentas[1];
 	Cliente *clientes=new Cliente[1];
@@ -76,6 +77,7 @@ int main() {
 				break;
 			}
 			case 3: {
+
 				system("cls");
 				menu(&op);
 				break;
@@ -88,6 +90,7 @@ int main() {
 				break;
 			}
 			case 5: {
+				transacciones(clientes, cuentas);
 				system("cls");
 				menu(&op);
 				break;
@@ -326,7 +329,7 @@ Cuentas* cargar_archivos_cuentas(Cuentas *cuentas) {
 Movimientos* cargar_archivos_movimientos(Movimientos *movimientos) {
 	int tam;
 	ifstream filemovimientos("bases de datos de los movimientos.dat",ios::binary|ios::in);
-	if(filemovimientos){
+	if(filemovimientos) {
 		filemovimientos.seekg(0, filemovimientos.end);
 		tam = filemovimientos.tellg()/sizeof(Movimientos);
 		delete[] movimientos;
@@ -588,7 +591,7 @@ void crear_cuentas() {
 				cout<<*(texto+i);
 			}
 			strcpy(texto,"o");
-			for(int k=1;k<4;k++){
+			for(int k=1; k<4; k++) {
 				gotoxy((anchopantalla/4)*k-strlen(texto)/2,10);
 				for(int i=0; i<strlen(texto); i++) {
 					cout<<*(texto+i);
@@ -654,6 +657,11 @@ void crear_cuentas() {
 			switch(correccion) {
 				case 1: {
 					tecla=0;
+					strcpy(texto,"                                 ");
+					gotoxy((anchopantalla/2)-strlen(texto)/2-5,12);
+					for(int i=0; i<strlen(texto); i++) {
+						cout<<*(texto+i);
+					}
 					strcpy(texto,"Escriba su numero: ");
 					gotoxy((anchopantalla/2)-strlen(texto)/2-5,12);
 					for(int i=0; i<strlen(texto); i++) {
@@ -748,7 +756,7 @@ void crear_cuentas() {
 		cout<<*(texto+i);
 	}
 	strcpy(texto,"o");
-	for(int k=1;k<3;k++){
+	for(int k=1; k<3; k++) {
 		gotoxy((anchopantalla/3)*k-strlen(texto)/2,8);
 		for(int i=0; i<strlen(texto); i++) {
 			cout<<*(texto+i);
@@ -813,8 +821,8 @@ void crear_cuentas() {
 	}
 	while(suficiente == false) {
 		cursor=obtenerPosicionCursor();
-		if(cursor.y>=22){
-			for(int j=10;j<28;j++){
+		if(cursor.y>=22) {
+			for(int j=10; j<28; j++) {
 				strcpy(texto,"                                                 ");
 				gotoxy((anchopantalla/2)-strlen(texto)/2-6,j);
 				for(int i=0; i<strlen(texto); i++) {
@@ -867,7 +875,7 @@ void consultar(Cliente *clientes, Cuentas *cuentas) {
 	ifstream fileclientes("bases de datos de los clientes.dat",ios::binary|ios::app|ios::in);
 	ifstream filecuentas("bases de datos de las cuentas.dat",ios::binary|ios::app|ios::in);
 	fileclientes.seekg(0,fileclientes.end);
-	filecuentas.seekg(0,fileclientes.end);
+	filecuentas.seekg(0,filecuentas.end);
 	tam=(filecuentas.tellg()/sizeof(Cuentas));
 	tam2=(fileclientes.tellg()/sizeof(Cliente));
 	fileclientes.close();
@@ -877,7 +885,7 @@ void consultar(Cliente *clientes, Cuentas *cuentas) {
 	cout << "Por que metodo desea consultar: " << endl << "1.Numero de identificacion " << endl << "2.Numero de cuenta" << endl;
 	cin >> opcion;
 	switch(opcion) {
-		case 1:{
+		case 1: {
 			cout << "Digite su numero de identificacion: ";
 			cin >> identificacion;
 			for(int i = 0; i < tam; i++) {
@@ -896,7 +904,7 @@ void consultar(Cliente *clientes, Cuentas *cuentas) {
 							cout << "Saldo: " << (cuentas+i)->actual << endl;
 						}
 					}
-				}
+				} else cout << "Cuenta no encontrada" << endl;
 			}
 			break;
 		}
@@ -906,21 +914,21 @@ void consultar(Cliente *clientes, Cuentas *cuentas) {
 			for(int i = 0; i < tam; i++) {
 				if(cuenta == (cuentas+i)->n_cuenta) {
 					cout << "Datos de cuenta: " << endl;
-							for(int k = 0; k < tam2; k++) {
-								if((cuentas+i)->cliente.identificacion == (clientes+k)->identificacion) {
-									cout << "Cliente: " << (clientes+k)->nombres << " " << (clientes+k)->apellidos << endl;
-									cout << "identificacion: " << (clientes+k)->identificacion << endl;
-									cout << "Cuenta #" << (cuentas+i)->n_cuenta << endl;
-									cout << "Cuenta de tipo: ";
-									if((cuentas+i)->tipo == 'A') {
-										cout << "ahorros" << endl;
-									} else {
-										cout << "corriente" << endl;
-									}
-									cout << "Saldo: " << (cuentas+i)->actual << endl;
+					for(int k = 0; k < tam2; k++) {
+						if((cuentas+i)->cliente.identificacion == (clientes+k)->identificacion) {
+							cout << "Cliente: " << (clientes+k)->nombres << " " << (clientes+k)->apellidos << endl;
+							cout << "identificacion: " << (clientes+k)->identificacion << endl;
+							cout << "Cuenta #" << (cuentas+i)->n_cuenta << endl;
+							cout << "Cuenta de tipo: ";
+							if((cuentas+i)->tipo == 'A') {
+								cout << "ahorros" << endl;
+							} else {
+								cout << "corriente" << endl;
 							}
+							cout << "Saldo: " << (cuentas+i)->actual << endl;
+						}
 					}
-				}
+				} else cout << "Cuenta no encontrada" << endl;
 			}
 			break;
 		}
@@ -930,27 +938,102 @@ void consultar(Cliente *clientes, Cuentas *cuentas) {
 	}
 	system("pause");
 }
+void transacciones(Cliente *clientes, Cuentas *cuentas) {
+	srand(time(0));
+	int numerocuenta;
+	int tam;
+	int tam2;
+	int opcion;
+	int retiro;
+	int consigna;
+	Movimientos movimientoaux;
+	ifstream filecuentas("bases de datos de las cuentas.dat",ios::binary|ios::app|ios::in);
+	ifstream fileclientes("bases de datos de los clientes.dat",ios::binary|ios::app|ios::in);
+	cout << "Digite su numero de cuenta: ";
+	cin >> numerocuenta;
+	filecuentas.seekg(0,filecuentas.end);
+	tam=(filecuentas.tellg()/sizeof(Cuentas));
+	fileclientes.seekg(0, fileclientes.end);
+	tam2=(fileclientes.tellg())/sizeof(Cliente);
+	fileclientes.close();
+	filecuentas.close();
+	for(int i = 0; i < tam; i++) {
+		if(numerocuenta == (cuentas+i)->n_cuenta) {
+			cout << "Que tipo de movimiento desea realizar? " << endl << "1. Retiro " << endl << "2. Consignacion" << endl;
+			cin >> opcion;
+			switch(opcion) {
+				case 1: {
+					movimientoaux.tipo_movimiento = 'R';
+					cout << "Cuanto quiere retirar? ";
+					cin >> retiro;
+					break;
+				}
+				case 2: {
+					movimientoaux.tipo_movimiento = 'C';
+					cout << "Cuanto quiere consignar? ";
+					cin >> consigna;
+					break;
+				}
+				default: {
+					break;
+				}
+			}
+		}
+		if(movimientoaux.tipo_movimiento == 'R') {
+			(cuentas+i)->actual -= retiro;
+		} else {
+			(cuentas+i)->actual += consigna;
+		}
+	}
+	movimientoaux.consecutivo = rand()%8889+1111;
+	cout << "Consecutivo: " << movimientoaux.consecutivo << endl;
+	cout << "Resumen de la operacion: ";
+	for(int i = 0; i < tam; i++) {
+		for(int j = 0; j < tam2; j++) {
+			if((cuentas+i)->cliente.identificacion == (clientes+j)->identificacion){
+			
+			
+				cout << "Cliente: " << (clientes+j)->nombres << " " << (clientes+j)->apellidos << endl;
+			cout << "Cuenta: #" << (cuentas+i)->n_cuenta << endl;
+				cout << "Tipo de movimiento: Retiro" << endl;
+				cout << "Valor: -" << retiro << endl;
+			} else {
+				cout << "Tipo de movimiento: Consignacion" << endl;
+				cout << "Valor: " << consigna << endl;
+			}
+			cout << "Saldo actual: " << (cuentas+i)->actual << endl;
+		}
+	}
+	system("pause");
+	ofstream outputmov("bases de datos de los movimientos.dat", ios::binary|ios::out|ios::app|ios::ate);
+	if(!outputmov) {
+		cout << "Sin conexion con el archivo de movimientos";
+		exit(1);
+	}
+	outputmov.write((char*)&movimientoaux, sizeof(Movimientos));
+	outputmov.close();
+	ofstream outputclient("bases de datos de los clientes.dat", ios::binary|ios::out|ios::app|ios::ate);
+	if(!outputclient) {
+		cout << "Sin conexion con el archivo de clientes";
+		exit(1);
+	}
+	ofstream outputcuent("bases de datos de las cuentas.dat", ios::binary|ios::out|ios::app|ios::ate);
+	if(!outputcuent) {
+		cout << "Sin conexion con el archivo de cuentas";
+		exit(1);
+	}
+	for(int i = 0; i < tam2; i++) {
+		outputcuent.write((char*)(cuentas+i), sizeof(Cuentas));
+	}
+	outputcuent.close();
+}
 
 
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//funciones de decoraciÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â³n
+//funciones de decoraciÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã‚Â¡ÃƒÆ’Ã†â€™ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â³n
 void ocultarCursor() {
 	HANDLE consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
 	CONSOLE_CURSOR_INFO cursorInfo;
