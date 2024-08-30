@@ -55,6 +55,7 @@ void consultar(Cliente* clientes, Cuentas *cuentas);
 void transacciones(Cliente *clientes, Cuentas *cuenta);
 int identificacionconsecutivo(int id);
 void consultarMovimientos(Cliente *clientes, Cuentas *cuentas, Movimientos *movimientos);
+void Mostrartodo(Cliente *clientes, Cuentas *cuentas, Movimientos *movimientos);
 int main() {
 	Cuentas *cuentas=new Cuentas[1];
 	Cliente *clientes=new Cliente[1];
@@ -98,6 +99,7 @@ int main() {
 				break;
 			}
 			case 6: {
+				Mostrartodo(clientes, cuentas, movimientos);
 				system("cls");
 				menu(&op);
 				break;
@@ -952,6 +954,7 @@ void transacciones(Cliente *clientes, Cuentas *cuentas) {
 	int opcion;
 	int retiro;
 	int consigna;
+	int poscuenta;
 	Movimientos movimientoaux;
 	ifstream filecuentas("bases de datos de las cuentas.dat",ios::binary|ios::app|ios::in);
 	ifstream fileclientes("bases de datos de los clientes.dat",ios::binary|ios::app|ios::in);
@@ -965,6 +968,7 @@ void transacciones(Cliente *clientes, Cuentas *cuentas) {
 	filecuentas.close();
 	for(int i = 0; i < tam; i++) {
 		if(numerocuenta == (cuentas+i)->n_cuenta) {
+			poscuenta = i;
 			encontrado=true;
 			cout << "Que tipo de movimiento desea realizar? " << endl << "1. Retiro " << endl << "2. Consignacion" << endl;
 			cin >> opcion;
@@ -993,11 +997,11 @@ void transacciones(Cliente *clientes, Cuentas *cuentas) {
 				}
 			}
 		}
-		if(movimientoaux.tipo_movimiento == 'R') {
-			(cuentas+i)->actual -= retiro;
-		} else {
-			(cuentas+i)->actual += consigna;
-		}
+	}
+	if(movimientoaux.tipo_movimiento == 'R') {
+		(cuentas+poscuenta)->actual -= retiro;
+	} else {
+		(cuentas+poscuenta)->actual += consigna;
 	}
 	if(encontrado==true) {
 		cout << "Resumen de la operacion: ";
@@ -1163,7 +1167,152 @@ void consultarMovimientos(Cliente *clientes, Cuentas *cuentas, Movimientos *movi
 
 }
 
+void Mostrartodo(Cliente *clientes, Cuentas *cuentas, Movimientos *movimientos) {
+	int cuenta;
+	int identificacion;
+	int eleccion;
+	int tam1;
+	int tam2;
+	int tam3;
+	int posmov;
+	int poscuent;
+	int posclient;
+	bool primero = true;
+	bool encontradocuenta = false;
+	bool encontradomovimiento = false;
+	ifstream inputmov("bases de datos de los movimientos.dat", ios::binary|ios::in);
+	ifstream inputclient("bases de datos de los clientes.dat", ios::binary|ios::in);
+	ifstream inputcuent("bases de datos de las cuentas.dat", ios::binary|ios::in);
+	inputclient.seekg(0, inputclient.end);
+	tam1 = inputclient.tellg()/sizeof(Cliente);
+	inputclient.close();
+	inputcuent.seekg(0, inputcuent.end);
+	tam2= inputcuent.tellg()/sizeof(Cuentas);
+	inputcuent.close();
+	inputmov.seekg(0, inputmov.end);
+	tam3 = (inputmov.tellg()/sizeof(Movimientos));
+	inputmov.close();
+	cout << "Como quiere consultar su reporte general?" << endl << "1.Por numero de identificacion" << endl << "2.Por numero de cuenta" << endl;
+	cin >> eleccion;
+	switch(eleccion) {
+		case 1: {
+			cout << "Digite su numero de identificacion: ";
+			cin >> identificacion;
+			for(int i = 0; i < tam2; i++) {
+				if(identificacion == (cuentas+i)->cliente.identificacion) {
+					cout << "Datos de cuenta: " << endl;
+					for(int j = 0; j < tam1; j++) {
+						if(identificacion == (clientes+j)->identificacion) {
+							encontradocuenta=true;
+							cout << "Cliente: " << (clientes+j)->nombres << " " << (clientes+j)->apellidos << endl;
+							cout << "Cuenta #" << (cuentas+i)->n_cuenta << endl;
+							cout << "Cuenta de tipo: ";
+							if((cuentas)->tipo == 'A') {
+								cout << "Ahorros" << endl;
+							} else {
+								cout << "Corriente" << endl;
+							}
+							cout << "Saldo actual: " << (cuentas+i)->actual << endl;
+						}
+					}
+				}
+			}
+			if(encontradocuenta == true) {
+				cout << "\n\n\n";
+				for(int i = 0; i < tam1; i++) {
+					for(int j = 0; j < tam3; j++) {
+						if(identificacion == (clientes+i)->identificacion && (clientes+i)->identificacion == (movimientos+j)->identificacion) {
+							for(int k = 0; k < tam2; k++) {
+								if((clientes+i)->identificacion == (cuentas+k)->cliente.identificacion) {
+									poscuent = k;
+								}
+							}
+							encontradomovimiento = true;
+							if(primero == true) {
+								posmov = j;
+								posclient = i;
+								primero = false;
+							}
 
+						}
+					}
+				}
+			}
+			if(encontradomovimiento == true) {
+				cout << "Consecutivos de movimiento \t Tipo de movimiento \t Valor " << endl;
+				for(int i = posmov; i < tam3; i++) {
+					if((movimientos+i)->identificacion == identificacion || (movimientos+i)->identificacion == (cuentas+poscuent)->cliente.identificacion) {
+						cout << (movimientos+i)->consecutivo << "|\t" << (movimientos+i)->tipo_movimiento << "|\t" << (movimientos+i)->valor_movimiento << endl;
+					}
+				}
+			}
+			if(encontradocuenta == true && encontradomovimiento == false) {
+
+				cout << "Movimientos no encontrados" << endl;
+			} else if(encontradocuenta == false) {
+				cout << "Cuenta no encontrada"<< endl;
+			}
+			break;
+		}
+		case 2: {
+			cout << "Digite su numero de cuenta ";
+			cin >> cuenta;
+			for(int i = 0; i < tam2; i++) {
+				if(cuenta == (cuentas+i)->n_cuenta) {
+					cout << "Datos de cuenta: " << endl;
+					for(int k = 0; k < tam1; k++) {
+						if((cuentas+i)->cliente.identificacion == (clientes+k)->identificacion) {
+							encontradocuenta=true;
+							cout << "Cliente: " << (clientes+k)->nombres << " " << (clientes+k)->apellidos << endl;
+							cout << "identificacion: " << (clientes+k)->identificacion << endl;
+							cout << "Cuenta #" << (cuentas+i)->n_cuenta << endl;
+							cout << "Cuenta de tipo: ";
+							if((cuentas+i)->tipo == 'A') {
+								cout << "Ahorros" << endl;
+							} else {
+								cout << "Corriente" << endl;
+							}
+							cout << "Saldo: " << (cuentas+i)->actual << endl;
+						}
+					}
+				}
+			}
+			for(int i = 0; i <tam2; i++) {
+				for(int j = 0; j < tam3; j++) {
+					for(int k = 0; k < tam1; k++) {
+						if(cuenta == (cuentas+i)->n_cuenta && (cuentas+i)->cliente.identificacion == (clientes+k)->identificacion && (clientes+k)->identificacion == (movimientos+j)->identificacion) {
+							encontradomovimiento = true;
+							if(primero == true) {
+								posmov = j;
+								poscuent = i;
+								posclient = k;
+								primero = false;
+							}
+						}
+					}
+				}
+			}
+			if(encontradomovimiento == true) {
+				cout << "Consecutivos de movimiento \t Tipo de movimiento \t Valor " << endl;
+				for(int i = posmov; i < tam3; i++) {
+					if((movimientos+i)->identificacion == identificacion || (movimientos+i)->identificacion == (cuentas+poscuent)->cliente.identificacion) {
+						cout << (movimientos+i)->consecutivo << "|\t" << (movimientos+i)->tipo_movimiento << "|\t" << (movimientos+i)->valor_movimiento << endl;
+					}
+				}
+			}
+			if(encontradocuenta == true && encontradomovimiento == false) {
+				cout << "Movimientos no encontrados" << endl;
+			} else if(encontradocuenta == false) {
+				cout << "Cuenta no encontrada"<< endl;
+			}
+			break;
+		}
+	}
+	system("pause");
+	if(encontradocuenta == false) {
+		cout << "No se encontro" << endl;
+	}
+}
 
 
 //funciones de decoracion
