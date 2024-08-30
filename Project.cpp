@@ -481,6 +481,8 @@ void registro_clientes() {
 	}
 	file.write((char*)&cliente, sizeof(Cliente));
 	file.close();
+	gotoxy((anchopantalla/2)-39/2,23);
+	system("pause");
 }
 
 void repetido(Cliente *cliente) {
@@ -842,7 +844,7 @@ void crear_cuentas() {
 		cin >> cuenta.apertura;
 		if(cuenta.apertura >= 50000) {
 			strcpy(texto,"Cuenta creada correctamente!!");
-			gotoxy((anchopantalla/2)-strlen(texto)/2,cursor.y+6);
+			gotoxy((anchopantalla/2)-strlen(texto)/2,cursor.y+4);
 			for(int i=0; i<strlen(texto); i++) {
 				cout<<*(texto+i);
 			}
@@ -865,15 +867,22 @@ void crear_cuentas() {
 	}
 	outputfile.write((char*)&cuenta, sizeof(Cuentas));
 	outputfile.close();
+	gotoxy((anchopantalla/2)-39/2,cursor.y+6);
+	system("pause");
 }
 
 void consultar(Cliente *clientes, Cuentas *cuentas) {
+	bool cambio=true;
+	int iteracion=0;
+	int tecla=0;
 	int identificacion;
 	int cuenta;
 	int opcion;
 	bool encontrado = false;
 	int tam;
 	int tam2;
+	char texto[100];
+	char textoaux[100];
 	ifstream fileclientes("bases de datos de los clientes.dat",ios::binary|ios::in);
 	ifstream filecuentas("bases de datos de las cuentas.dat",ios::binary|ios::in);
 	fileclientes.seekg(0,fileclientes.end);
@@ -882,29 +891,132 @@ void consultar(Cliente *clientes, Cuentas *cuentas) {
 	tam2=(fileclientes.tellg()/sizeof(Cliente));
 	fileclientes.close();
 	filecuentas.close();
-
-
-	cout << "Por que metodo desea consultar: " << endl << "1.Numero de identificacion " << endl << "2.Numero de cuenta" << endl;
-	cin >> opcion;
+	strcpy(texto,"Por que metodo desea buscar una cuenta?");
+	gotoxy(anchopantalla/2-strlen(texto)/2,4);
+	for(int i=0;i<strlen(texto);i++){
+		cout<<*(texto+i);
+	}
+	for(int i=0; i<anchopantalla; i++) {
+		for(int j=0; j<altopantalla; j++) {
+			if((i==0)||(i==anchopantalla-1)||(j==0)||(j==altopantalla-1)) {
+				gotoxy(i,j);
+				cout<<char(178);
+			}
+		}
+	}
+	strcpy(texto,"Por # de identificacion");
+	gotoxy(anchopantalla/3-strlen(texto)/2,7);
+	for(int i=0;i<strlen(texto);i++){
+		cout<<*(texto+i);
+	}
+	strcpy(texto,"Por # de Cuenta");
+	gotoxy((anchopantalla/3)*2-strlen(texto)/2,7);
+	for(int i=0;i<strlen(texto);i++){
+		cout<<*(texto+i);
+	}
+	strcpy(texto,"o");
+	gotoxy(anchopantalla/3-strlen(texto)/2,8);
+	for(int i=0;i<strlen(texto);i++){
+		cout<<*(texto+i);
+	}
+	strcpy(texto,"o");
+	gotoxy((anchopantalla/3)*2-strlen(texto)/2,8);
+	for(int i=0;i<strlen(texto);i++){
+		cout<<*(texto+i);
+	}
+	gotoxy((anchopantalla/3)-strlen(texto)/2,8);
+	while(tecla!=13) {
+		cursor=obtenerPosicionCursor();
+		iteracion++;
+		if(iteracion%2500==0) {
+			if(cambio) {
+				cout<<char(254);
+				gotoxy(cursor.x,cursor.y);
+				cambio=false;
+			} else {
+				cout<<"o";
+				gotoxy(cursor.x,cursor.y);
+				cambio=true;
+			}
+		}
+		if(kbhit()) {
+			tecla=getch();
+			switch(tecla){
+				case 75: { //Movimiento a la izquierda
+					if(cursor.x==(anchopantalla/3)-strlen(texto)/2) {
+						cout<<"o";
+						gotoxy((anchopantalla/3)*2-strlen(texto)/2,8);
+					}
+					if(cursor.x==(anchopantalla/3)*2-strlen(texto)/2) {
+						cout<<"o";
+						gotoxy((anchopantalla/3)-strlen(texto)/2,8);
+					}
+					break;
+				}
+				case 77: { //Movimiento a la derecha
+					if(cursor.x==(anchopantalla/3)*2-strlen(texto)/2) {
+						cout<<"o";
+						gotoxy((anchopantalla/3)-strlen(texto)/2,8);
+					}
+					if(cursor.x==(anchopantalla/3)-strlen(texto)/2) {
+						cout<<"o";
+						gotoxy((anchopantalla/3)*2-strlen(texto)/2,8);
+					}
+					break;
+				}
+			}
+		}
+	}
+	if(cursor.x==(anchopantalla/3)-strlen(texto)/2)
+		opcion=1;
+	if(cursor.x==(anchopantalla/3)*2-strlen(texto)/2)
+		opcion=2;
 	switch(opcion) {
 		case 1: {
-			cout << "Digite su numero de identificacion: ";
-			cin >> identificacion;
+			strcpy(texto,"Digite el # de identificacion: ");
+			gotoxy((anchopantalla/3)-strlen(texto)/2,10);
+			for(int i=0;i<strlen(texto);i++){
+				cout<<*(texto+i);
+			}
+			cin>>identificacion;
 			for(int i = 0; i < tam; i++) {
 				if(identificacion == (cuentas+i)->cliente.identificacion) {
-					cout << "Datos de cuenta: " << endl;
+					strcpy(texto,"Datos de cuenta ");
+					gotoxy((anchopantalla/3)-strlen(texto)/2,15);
+					for(int i=0;i<strlen(texto);i++){
+						cout<<*(texto+i);
+					}
 					for(int j = 0; j < tam2; j++) {
 						if(identificacion == (clientes+j)->identificacion) {
 							encontrado=true;
-							cout << "Cliente: " << (clientes+j)->nombres << " " << (clientes+j)->apellidos << endl;
-							cout << "Cuenta #" << (cuentas+i)->n_cuenta << endl;
-							cout << "Cuenta de tipo: ";
-							if((cuentas)->tipo == 'A') {
-								cout << "Ahorros" << endl;
-							} else {
-								cout << "Corriente" << endl;
+							strcpy(texto,"       Cliente: ");
+							gotoxy((anchopantalla/3)-strlen(texto)/2,17);
+							for(int i=0;i<strlen(texto);i++){
+								cout<<*(texto+i);
 							}
-							cout << "Saldo: " << (cuentas+i)->actual << endl;
+							cout<<(clientes+j)->nombres<<" "<<(clientes+j)->apellidos;
+							strcpy(texto,"      # Cuenta: ");
+							gotoxy((anchopantalla/3)-strlen(texto)/2,19);
+							for(int i=0;i<strlen(texto);i++){
+								cout<<*(texto+i);
+							}
+							cout<<(cuentas+i)->n_cuenta;
+							strcpy(texto,"Cuenta de tipo: ");
+							gotoxy((anchopantalla/3)-strlen(texto)/2,21);
+							for(int i=0;i<strlen(texto);i++){
+								cout<<*(texto+i);
+							}
+							if((cuentas)->tipo == 'A') {
+								cout<<"Ahorros";
+							} else {
+								cout<<"Corriente";
+							}
+							strcpy(texto,"         Saldo: ");
+							gotoxy((anchopantalla/3)-strlen(texto)/2,23);
+							for(int i=0;i<strlen(texto);i++){
+								cout<<*(texto+i);
+							}
+							cout<<(cuentas+i)->actual;
 						}
 					}
 				}
@@ -912,24 +1024,50 @@ void consultar(Cliente *clientes, Cuentas *cuentas) {
 			break;
 		}
 		case 2: {
-			cout << "Digite su numero de cuenta ";
+			strcpy(texto,"Digite el # de cuenta ");
+			gotoxy((anchopantalla/3)*2-strlen(texto)/2,10);
+			for(int i=0;i<strlen(texto);i++){
+				cout<<*(texto+i);
+			}
 			cin >> cuenta;
 			for(int i = 0; i < tam; i++) {
 				if(cuenta == (cuentas+i)->n_cuenta) {
-					cout << "Datos de cuenta: " << endl;
+					strcpy(texto,"Datos de cuenta ");
+					gotoxy((anchopantalla/3)*2-strlen(texto)/2,15);
+					for(int i=0;i<strlen(texto);i++){
+						cout<<*(texto+i);
+					}
 					for(int k = 0; k < tam2; k++) {
 						if((cuentas+i)->cliente.identificacion == (clientes+k)->identificacion) {
 							encontrado=true;
-							cout << "Cliente: " << (clientes+k)->nombres << " " << (clientes+k)->apellidos << endl;
-							cout << "identificacion: " << (clientes+k)->identificacion << endl;
-							cout << "Cuenta #" << (cuentas+i)->n_cuenta << endl;
-							cout << "Cuenta de tipo: ";
+							strcpy(texto,"       Cliente: ");
+							gotoxy((anchopantalla/3)*2-strlen(texto)/2,17);
+							for(int i=0;i<strlen(texto);i++){
+								cout<<*(texto+i);
+							}
+							cout << (clientes+k)->nombres << " " << (clientes+k)->apellidos << endl;
+							strcpy(texto,"      # Cuenta: ");
+							gotoxy((anchopantalla/3)*2-strlen(texto)/2,19);
+							for(int i=0;i<strlen(texto);i++){
+								cout<<*(texto+i);
+							}
+							cout << (cuentas+i)->n_cuenta << endl;
+							strcpy(texto,"Cuenta de tipo: ");
+							gotoxy((anchopantalla/3)*2-strlen(texto)/2,21);
+							for(int i=0;i<strlen(texto);i++){
+								cout<<*(texto+i);
+							}
 							if((cuentas+i)->tipo == 'A') {
 								cout << "Ahorros" << endl;
 							} else {
 								cout << "Corriente" << endl;
 							}
-							cout << "Saldo: " << (cuentas+i)->actual << endl;
+							strcpy(texto,"         Saldo: ");
+							gotoxy((anchopantalla/3)*2-strlen(texto)/2,23);
+							for(int i=0;i<strlen(texto);i++){
+								cout<<*(texto+i);
+							}
+							cout << (cuentas+i)->actual << endl;
 						}
 					}
 				}
@@ -943,6 +1081,7 @@ void consultar(Cliente *clientes, Cuentas *cuentas) {
 	if(encontrado==false) {
 		cout << "Cuenta no encontrada" << endl;
 	}
+	gotoxy((anchopantalla/2)-39/2,25);
 	system("pause");
 }
 void transacciones(Cliente *clientes, Cuentas *cuentas) {
@@ -1457,7 +1596,9 @@ void despedida() {
 	gotoxy((anchopantalla/2)-strlen(texto)/2,18);
 	for(int i=0; i<strlen(texto); i++) {
 		cout<<*(texto+i);
-
 	}
+	cursor=obtenerPosicionCursor();
+	gotoxy(0,cursor.y+2);
+	system("pause");
 	exit(1);
 }
