@@ -1,3 +1,9 @@
+/*
+	INTEGRANTES: GUILLERMO APONTE, DANIEL RAMIREZ
+	GRUPO: 4
+	FECHA: 2024/09/15
+	PROYECTO #1 "BANCO G & D ( SISTEMA DE MANEJO DE CLIENTES )"
+*/
 #include <iostream>
 #include <windows.h>
 #include <conio.h>
@@ -1031,7 +1037,7 @@ void consultar(Cliente *clientes, Cuentas *cuentas) {
 							for(int i=0; i<strlen(texto); i++) {
 								cout<<*(texto+i);
 							}
-							if((cuentas)->tipo == 'A') {
+							if((cuentas+i)->tipo == 'A') {
 								cout<<"Ahorros";
 							} else {
 								cout<<"Corriente";
@@ -1105,8 +1111,12 @@ void consultar(Cliente *clientes, Cuentas *cuentas) {
 			break;
 		}
 	}
+	strcpy(texto,"Cuenta no encontrada");
+	gotoxy((anchopantalla/2)-strlen(texto)/2,15);
 	if(encontrado==false) {
-		cout << "Cuenta no encontrada" << endl;
+		for(int i=0; i<strlen(texto); i++) {
+			cout<<*(texto+i);
+		}
 	}
 	gotoxy((anchopantalla/2)-39/2,25);
 	system("pause");
@@ -1278,6 +1288,7 @@ void transacciones(Cliente *clientes, Cuentas *cuentas) {
 					mostrarCursor();
 					cin >> consigna;
 					ocultarCursor();
+					system("pause");
 					movimientoaux.valor_movimiento=consigna;
 					break;
 				}
@@ -1286,11 +1297,11 @@ void transacciones(Cliente *clientes, Cuentas *cuentas) {
 				}
 			}
 		}
-		if(movimientoaux.tipo_movimiento == 'R') {
-			(cuentas+poscuenta)->actual -= retiro;
-		} else {
-			(cuentas+poscuenta)->actual += consigna;
-		}
+	}
+	if(movimientoaux.tipo_movimiento == 'R') {
+		(cuentas+poscuenta)->actual -= retiro;
+	} else {
+		(cuentas+poscuenta)->actual += consigna;
 	}
 	if(encontrado==true) {
 		system("cls");
@@ -1539,7 +1550,7 @@ void consultarMovimientos(Cliente *clientes, Cuentas *cuentas, Movimientos *movi
 		eleccion=2;
 	switch(eleccion) {
 		case 1: {
-			strcpy(texto,"Digite el # de cuenta ");
+			strcpy(texto,"Digite el # de identificacion ");
 			gotoxy(anchopantalla/3-strlen(texto)/2,12);
 			for(int i=0;i<strlen(texto);i++){
 				cout<<*(texto+i);
@@ -1568,7 +1579,7 @@ void consultarMovimientos(Cliente *clientes, Cuentas *cuentas, Movimientos *movi
 			break;
 		}
 		case 2: {
-			strcpy(texto,"Digite el # de identificacion ");
+			strcpy(texto,"Digite el # de cuenta ");
 			gotoxy(anchopantalla/3*2-strlen(texto)/2,12);
 			for(int i=0;i<strlen(texto);i++){
 				cout<<*(texto+i);
@@ -1682,6 +1693,11 @@ void Mostrartodo(Cliente *clientes, Cuentas *cuentas, Movimientos *movimientos) 
 	bool encontradomovimiento = false;
 	char texto[100];
 	ifstream inputmov("bases de datos de los movimientos.dat", ios::binary|ios::in);
+	if(!inputmov){
+		cout<<"Error, Verifique si existe almenos un movimiento para consultar"<<endl;
+		system("pause");
+		return;
+	}
 	ifstream inputclient("bases de datos de los clientes.dat", ios::binary|ios::in);
 	ifstream inputcuent("bases de datos de las cuentas.dat", ios::binary|ios::in);
 	inputclient.seekg(0, inputclient.end);
@@ -1986,7 +2002,7 @@ void Mostrartodo(Cliente *clientes, Cuentas *cuentas, Movimientos *movimientos) 
 							}	
 							gotoxy((anchopantalla/5)*2-3,7);
 							cout << (cuentas+i)->n_cuenta;
-							if((cuentas)->tipo == 'A') {
+							if((cuentas+i)->tipo == 'A') {
 								gotoxy((anchopantalla/5)*3-4,7);
 								cout << "Ahorros" << endl;
 							} else {
