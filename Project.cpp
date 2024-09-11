@@ -1288,7 +1288,6 @@ void transacciones(Cliente *clientes, Cuentas *cuentas) {
 					mostrarCursor();
 					cin >> consigna;
 					ocultarCursor();
-					system("pause");
 					movimientoaux.valor_movimiento=consigna;
 					break;
 				}
@@ -1393,8 +1392,8 @@ void transacciones(Cliente *clientes, Cuentas *cuentas) {
 			outputclient.write((char*)(clientes+i), sizeof(Cliente));
 		}
 		outputclient.close();
-		
-		
+
+
 		ofstream outputcuent("bases de datos de las cuentas.dat", ios::binary|ios::out);
 		if(!outputcuent) {
 			cout << "Sin conexion con el archivo de cuentas";
@@ -1552,7 +1551,7 @@ void consultarMovimientos(Cliente *clientes, Cuentas *cuentas, Movimientos *movi
 		case 1: {
 			strcpy(texto,"Digite el # de identificacion ");
 			gotoxy(anchopantalla/3-strlen(texto)/2,12);
-			for(int i=0;i<strlen(texto);i++){
+			for(int i=0; i<strlen(texto); i++) {
 				cout<<*(texto+i);
 			}
 			mostrarCursor();
@@ -1581,7 +1580,7 @@ void consultarMovimientos(Cliente *clientes, Cuentas *cuentas, Movimientos *movi
 		case 2: {
 			strcpy(texto,"Digite el # de cuenta ");
 			gotoxy(anchopantalla/3*2-strlen(texto)/2,12);
-			for(int i=0;i<strlen(texto);i++){
+			for(int i=0; i<strlen(texto); i++) {
 				cout<<*(texto+i);
 			}
 			mostrarCursor();
@@ -1620,27 +1619,27 @@ void consultarMovimientos(Cliente *clientes, Cuentas *cuentas, Movimientos *movi
 		}
 		strcpy(texto,"Consecutivo");
 		gotoxy((anchopantalla/8),3);
-		for(int i=0;i<strlen(texto);i++){
+		for(int i=0; i<strlen(texto); i++) {
 			cout<<*(texto+i);
 		}
 		strcpy(texto,"Cliente");
 		gotoxy((anchopantalla/8)*2,3);
-		for(int i=0;i<strlen(texto);i++){
+		for(int i=0; i<strlen(texto); i++) {
 			cout<<*(texto+i);
 		}
 		strcpy(texto,"Cuenta");
 		gotoxy((anchopantalla/7)*3,3);
-		for(int i=0;i<strlen(texto);i++){
+		for(int i=0; i<strlen(texto); i++) {
 			cout<<*(texto+i);
 		}
 		strcpy(texto,"Tipo");
 		gotoxy((anchopantalla/7)*4,3);
-		for(int i=0;i<strlen(texto);i++){
+		for(int i=0; i<strlen(texto); i++) {
 			cout<<*(texto+i);
 		}
 		strcpy(texto,"Valor del movimiento");
 		gotoxy((anchopantalla/7)*5,3);
-		for(int i=0;i<strlen(texto);i++){
+		for(int i=0; i<strlen(texto); i++) {
 			cout<<*(texto+i);
 		}
 		for(int i = posmov; i < tam3; i++) {
@@ -1659,14 +1658,14 @@ void consultarMovimientos(Cliente *clientes, Cuentas *cuentas, Movimientos *movi
 					cout << "Consigna" << endl;
 				}
 				gotoxy((anchopantalla/7)*5,linea);
-				cout<<(movimientos+i)->valor_movimiento;	
+				cout<<(movimientos+i)->valor_movimiento;
 				linea++;
 			}
 		}
 	} else {
 		strcpy(texto,"Cuenta no encontrada");
 		gotoxy(anchopantalla/2-strlen(texto)/2,14);
-		for(int i=0;i<strlen(texto);i++){
+		for(int i=0; i<strlen(texto); i++) {
 			cout<<*(texto+i);
 		}
 	}
@@ -1693,7 +1692,7 @@ void Mostrartodo(Cliente *clientes, Cuentas *cuentas, Movimientos *movimientos) 
 	bool encontradomovimiento = false;
 	char texto[100];
 	ifstream inputmov("bases de datos de los movimientos.dat", ios::binary|ios::in);
-	if(!inputmov){
+	if(!inputmov) {
 		cout<<"Error, Verifique si existe almenos un movimiento para consultar"<<endl;
 		system("pause");
 		return;
@@ -1711,7 +1710,7 @@ void Mostrartodo(Cliente *clientes, Cuentas *cuentas, Movimientos *movimientos) 
 	inputmov.close();
 	strcpy(texto,"Como quiere consultar el reporte general?");
 	gotoxy(anchopantalla/2-strlen(texto)/2,3);
-	for(int i=0;i<strlen(texto);i++){
+	for(int i=0; i<strlen(texto); i++) {
 		cout<<*(texto+i);
 	}
 	for(int i=0; i<anchopantalla; i++) {
@@ -1793,7 +1792,7 @@ void Mostrartodo(Cliente *clientes, Cuentas *cuentas, Movimientos *movimientos) 
 		case 1: {
 			strcpy(texto,"Digite el # de identificacion ");
 			gotoxy(anchopantalla/3-strlen(texto)/2,12);
-			for(int i=0;i<strlen(texto);i++){
+			for(int i=0; i<strlen(texto); i++) {
 				cout<<*(texto+i);
 			}
 			mostrarCursor();
@@ -1812,32 +1811,32 @@ void Mostrartodo(Cliente *clientes, Cuentas *cuentas, Movimientos *movimientos) 
 				if(identificacion == (cuentas+i)->cliente.identificacion) {
 					strcpy(texto,"REPORTE GENERAL");
 					gotoxy(anchopantalla/2-strlen(texto)/2,2);
-					for(int i=0;i<strlen(texto);i++){
+					for(int i=0; i<strlen(texto); i++) {
 						cout<<*(texto+i);
 					}
 					strcpy(texto,"Datos de cuenta");
 					gotoxy(anchopantalla/2-strlen(texto)/2,3);
-					for(int i=0;i<strlen(texto);i++){
+					for(int i=0; i<strlen(texto); i++) {
 						cout<<*(texto+i);
 					}
 					strcpy(texto,"Cliente");
 					gotoxy((anchopantalla/5)-strlen(texto)/2,5);
-					for(int i=0;i<strlen(texto);i++){
+					for(int i=0; i<strlen(texto); i++) {
 						cout<<*(texto+i);
 					}
 					strcpy(texto,"Cuenta #");
 					gotoxy((anchopantalla/5)*2-strlen(texto)/2,5);
-					for(int i=0;i<strlen(texto);i++){
+					for(int i=0; i<strlen(texto); i++) {
 						cout<<*(texto+i);
 					}
 					strcpy(texto,"Tipo de cuenta");
 					gotoxy((anchopantalla/5)*3-strlen(texto)/2,5);
-					for(int i=0;i<strlen(texto);i++){
+					for(int i=0; i<strlen(texto); i++) {
 						cout<<*(texto+i);
 					}
 					strcpy(texto,"Saldo actual");
 					gotoxy((anchopantalla/5)*4-strlen(texto)/2,5);
-					for(int i=0;i<strlen(texto);i++){
+					for(int i=0; i<strlen(texto); i++) {
 						cout<<*(texto+i);
 					}
 					for(int j = 0; j < tam1; j++) {
@@ -1848,9 +1847,9 @@ void Mostrartodo(Cliente *clientes, Cuentas *cuentas, Movimientos *movimientos) 
 							strcat(texto," ");
 							strcat(texto,(clientes+j)->apellidos);
 							gotoxy((anchopantalla/5)-strlen(texto)/2,7);
-							for(int i=0;i<strlen(texto);i++){
+							for(int i=0; i<strlen(texto); i++) {
 								cout<<*(texto+i);
-							}	
+							}
 							gotoxy((anchopantalla/5)*2-3,7);
 							cout << (cuentas+i)->n_cuenta;
 							if((cuentas)->tipo == 'A') {
@@ -1889,22 +1888,22 @@ void Mostrartodo(Cliente *clientes, Cuentas *cuentas, Movimientos *movimientos) 
 			if(encontradomovimiento == true) {
 				strcpy(texto,"MOVIMIENTOS");
 				gotoxy((anchopantalla/2)-strlen(texto)/2,9);
-				for(int i=0;i<strlen(texto);i++){
+				for(int i=0; i<strlen(texto); i++) {
 					cout<<*(texto+i);
 				}
 				strcpy(texto,"Consecutivos");
 				gotoxy((anchopantalla/4)-strlen(texto)/2,11);
-				for(int i=0;i<strlen(texto);i++){
+				for(int i=0; i<strlen(texto); i++) {
 					cout<<*(texto+i);
 				}
 				strcpy(texto,"Tipo");
 				gotoxy((anchopantalla/4)*2-strlen(texto)/2,11);
-				for(int i=0;i<strlen(texto);i++){
+				for(int i=0; i<strlen(texto); i++) {
 					cout<<*(texto+i);
 				}
 				strcpy(texto,"Valor");
 				gotoxy((anchopantalla/4)*3,11);
-				for(int i=0;i<strlen(texto);i++){
+				for(int i=0; i<strlen(texto); i++) {
 					cout<<*(texto+i);
 				}
 				for(int i = posmov; i < tam3; i++) {
@@ -1927,13 +1926,13 @@ void Mostrartodo(Cliente *clientes, Cuentas *cuentas, Movimientos *movimientos) 
 			if(encontradocuenta == true && encontradomovimiento == false) {
 				strcpy(texto,"Movimientos no encontrados");
 				gotoxy((anchopantalla/2)-strlen(texto)/2,10);
-				for(int i=0;i<strlen(texto);i++){
+				for(int i=0; i<strlen(texto); i++) {
 					cout<<*(texto+i);
 				}
 			} else if(encontradocuenta == false) {
 				strcpy(texto,"Cuenta no encontrada");
 				gotoxy((anchopantalla/2)-strlen(texto)/2,8);
-				for(int i=0;i<strlen(texto);i++){
+				for(int i=0; i<strlen(texto); i++) {
 					cout<<*(texto+i);
 				}
 			}
@@ -1942,7 +1941,7 @@ void Mostrartodo(Cliente *clientes, Cuentas *cuentas, Movimientos *movimientos) 
 		case 2: {
 			strcpy(texto,"Digite su numero de cuenta ");
 			gotoxy(anchopantalla/3*2-strlen(texto)/2,12);
-			for(int i=0;i<strlen(texto);i++){
+			for(int i=0; i<strlen(texto); i++) {
 				cout<<*(texto+i);
 			}
 			mostrarCursor();
@@ -1961,32 +1960,32 @@ void Mostrartodo(Cliente *clientes, Cuentas *cuentas, Movimientos *movimientos) 
 				if(cuenta == (cuentas+i)->n_cuenta) {
 					strcpy(texto,"REPORTE GENERAL");
 					gotoxy(anchopantalla/2-strlen(texto)/2,2);
-					for(int i=0;i<strlen(texto);i++){
+					for(int i=0; i<strlen(texto); i++) {
 						cout<<*(texto+i);
 					}
 					strcpy(texto,"Datos de cuenta");
 					gotoxy(anchopantalla/2-strlen(texto)/2,3);
-					for(int i=0;i<strlen(texto);i++){
+					for(int i=0; i<strlen(texto); i++) {
 						cout<<*(texto+i);
 					}
 					strcpy(texto,"Cliente");
 					gotoxy((anchopantalla/5)-strlen(texto)/2,5);
-					for(int i=0;i<strlen(texto);i++){
+					for(int i=0; i<strlen(texto); i++) {
 						cout<<*(texto+i);
 					}
 					strcpy(texto,"Cuenta #");
 					gotoxy((anchopantalla/5)*2-strlen(texto)/2,5);
-					for(int i=0;i<strlen(texto);i++){
+					for(int i=0; i<strlen(texto); i++) {
 						cout<<*(texto+i);
 					}
 					strcpy(texto,"Tipo de cuenta");
 					gotoxy((anchopantalla/5)*3-strlen(texto)/2,5);
-					for(int i=0;i<strlen(texto);i++){
+					for(int i=0; i<strlen(texto); i++) {
 						cout<<*(texto+i);
 					}
 					strcpy(texto,"Saldo actual");
 					gotoxy((anchopantalla/5)*4-strlen(texto)/2,5);
-					for(int i=0;i<strlen(texto);i++){
+					for(int i=0; i<strlen(texto); i++) {
 						cout<<*(texto+i);
 					}
 					for(int k = 0; k < tam1; k++) {
@@ -1997,9 +1996,9 @@ void Mostrartodo(Cliente *clientes, Cuentas *cuentas, Movimientos *movimientos) 
 							strcat(texto," ");
 							strcat(texto,(clientes+k)->apellidos);
 							gotoxy((anchopantalla/5)-strlen(texto)/2,7);
-							for(int i=0;i<strlen(texto);i++){
+							for(int i=0; i<strlen(texto); i++) {
 								cout<<*(texto+i);
-							}	
+							}
 							gotoxy((anchopantalla/5)*2-3,7);
 							cout << (cuentas+i)->n_cuenta;
 							if((cuentas+i)->tipo == 'A') {
@@ -2033,22 +2032,22 @@ void Mostrartodo(Cliente *clientes, Cuentas *cuentas, Movimientos *movimientos) 
 			if(encontradomovimiento == true) {
 				strcpy(texto,"MOVIMIENTOS");
 				gotoxy((anchopantalla/2)-strlen(texto)/2,9);
-				for(int i=0;i<strlen(texto);i++){
+				for(int i=0; i<strlen(texto); i++) {
 					cout<<*(texto+i);
 				}
 				strcpy(texto,"Consecutivos");
 				gotoxy((anchopantalla/4)-strlen(texto)/2,11);
-				for(int i=0;i<strlen(texto);i++){
+				for(int i=0; i<strlen(texto); i++) {
 					cout<<*(texto+i);
 				}
 				strcpy(texto,"Tipo");
 				gotoxy((anchopantalla/4)*2-strlen(texto)/2,11);
-				for(int i=0;i<strlen(texto);i++){
+				for(int i=0; i<strlen(texto); i++) {
 					cout<<*(texto+i);
 				}
 				strcpy(texto,"Valor");
 				gotoxy((anchopantalla/4)*3,11);
-				for(int i=0;i<strlen(texto);i++){
+				for(int i=0; i<strlen(texto); i++) {
 					cout<<*(texto+i);
 				}
 				for(int i = posmov; i < tam3; i++) {
@@ -2056,11 +2055,11 @@ void Mostrartodo(Cliente *clientes, Cuentas *cuentas, Movimientos *movimientos) 
 						gotoxy((anchopantalla/4),linea);
 						cout << (movimientos+i)->consecutivo;
 						if((movimientos+i)->tipo_movimiento == 'R') {
-								gotoxy((anchopantalla/4)*2-3,linea);
-								cout << "Retiro" << endl;
+							gotoxy((anchopantalla/4)*2-3,linea);
+							cout << "Retiro" << endl;
 						} else {
-								gotoxy((anchopantalla/4)*2-4,linea);
-								cout << "Consigna" << endl;
+							gotoxy((anchopantalla/4)*2-4,linea);
+							cout << "Consigna" << endl;
 						}
 						gotoxy((anchopantalla/4)*3,linea);
 						cout << (movimientos+i)->valor_movimiento;
@@ -2071,13 +2070,13 @@ void Mostrartodo(Cliente *clientes, Cuentas *cuentas, Movimientos *movimientos) 
 			if(encontradocuenta == true && encontradomovimiento == false) {
 				strcpy(texto,"Movimientos no encontrados");
 				gotoxy((anchopantalla/2)-strlen(texto)/2,10);
-				for(int i=0;i<strlen(texto);i++){
+				for(int i=0; i<strlen(texto); i++) {
 					cout<<*(texto+i);
 				}
 			} else if(encontradocuenta == false) {
 				strcpy(texto,"Cuenta no encontrada");
 				gotoxy((anchopantalla/2)-strlen(texto)/2,8);
-				for(int i=0;i<strlen(texto);i++){
+				for(int i=0; i<strlen(texto); i++) {
 					cout<<*(texto+i);
 				}
 			}
